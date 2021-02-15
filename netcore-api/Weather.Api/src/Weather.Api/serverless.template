@@ -1,0 +1,54 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application that uses the ASP.NET Core framework running in Amazon Lambda.",
+  "Parameters": {},
+  "Conditions": {},
+  "Resources": {
+    "ApiGatewayApi": {
+      "Type": "AWS::Serverless::Api",
+      "Properties": {
+        "StageName": "dev"
+      }
+    },
+    "AspNetCoreFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Weather.Api::Weather.Api.LambdaEntryPoint::FunctionHandlerAsync",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambda_FullAccess"
+        ],
+        "Environment": {},
+        "Tags": {
+          "developer": "dhiego",
+          "type": "poc"
+        },
+        "Tracing": "Active",
+        "Events": {
+          "APIProxyResource": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/{proxy+}",
+              "Method": "ANY",
+              "RestApiId": { "Ref": "ApiGatewayApi" }
+            }
+          }
+        }
+      }
+    }
+  }
+  //},
+  //"Outputs": {
+  //  "ApiURL": {
+  //    "Description": "API endpoint URL for Dev environment",
+  //    "Value": {
+  //      "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/"
+  //    }
+  //  }
+  //}
+}
